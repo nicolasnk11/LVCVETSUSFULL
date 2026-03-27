@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Cores Premium */
+  --sidebar-bg: #0f172a;     /* Azul Noturno (Quase preto) */
+  --sidebar-text: #94a3b8;   /* Cinza Azulado */
+  --sidebar-active: #38bdf8; /* Azul Neon suave */
+  --sidebar-active-bg: rgba(56, 189, 248, 0.1);
+  
+  --bg-main: #f8fafc;        /* Branco Gelo (Fundo) */
+  --surface: #ffffff;        /* Branco Puro (Cards) */
+  --text-primary: #1e293b;   /* Texto Escuro */
+  --text-secondary: #64748b; /* Texto Suave */
+  
+  --brand-primary: #0ea5e9;  /* Azul Sky */
+  --brand-success: #10b981;  /* Verde Esmeralda */
+  --brand-warning: #f59e0b;  /* Laranja */
+  --brand-danger: #ef4444;   /* Vermelho */
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased; /* Deixa a fonte mais nítida */
+}
+
+/* Sidebar de Luxo */
+.sidebar {
+  width: 280px;
+  background-color: var(--sidebar-bg);
+  height: 100vh;
+  position: fixed;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.05);
+}
+
+.main-content {
+  margin-left: 280px;
+  padding: 40px;
+  min-height: 100vh;
+}
+
+/* Nav Items */
+.nav-category {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #475569;
+  font-weight: 700;
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-item svg { margin-right: 14px; font-size: 1.2rem; }
+
+.nav-item:hover {
+  background-color: rgba(255,255,255,0.05);
+  color: white;
+  transform: translateX(5px);
+}
+
+.nav-item.active {
+  background-color: var(--brand-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4); /* Brilho no botão ativo */
+}
+
+/* Cards Flutuantes */
+.card-premium {
+  background: var(--surface);
+  border-radius: 20px; /* Cantos bem arredondados */
+  padding: 28px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  border: 1px solid #f1f5f9;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-premium:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+}
+
+/* Botão Moderno */
+.btn-modern {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  transition: all 0.2s;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-modern:hover {
+  box-shadow: 0 6px 15px rgba(14, 165, 233, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Tabela Estilo SaaS */
+.table-modern th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 12px;
+}
+.table-modern td {
+  padding: 16px 0;
+  border-bottom: 1px solid #f8fafc;
+  color: var(--text-primary);
+}
+.table-modern tr:last-child td { border-bottom: none; }
