@@ -78,12 +78,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis', # Note o engine GIS!
-        'NAME': 'vetleish_db',
-        'USER': 'postgres',
-        'PASSWORD': '09112006N!ck', # <--- Coloque a senha que definiu na instalação
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
