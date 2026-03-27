@@ -1,4 +1,4 @@
-from django.contrib.gis.db import models # Mantendo o GIS para o futuro
+from django.db import models
 
 class Proprietario(models.Model):
     nome = models.CharField(max_length=255)
