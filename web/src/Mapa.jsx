@@ -29,7 +29,7 @@ const limitesFortaleza = [
 const getFotoUrl = (fotoPath) => {
     if (!fotoPath) return null;
     if (fotoPath.startsWith('http')) return fotoPath;
-    return `https://vetleish-api.onrender.com${fotoPath}`;
+    return `https://lvcvetsusfull.onrender.com${fotoPath}`;
 };
 
 const createPetIcon = (fotoUrl, status) => {
@@ -99,7 +99,7 @@ const Mapa = () => {
     const [filtroVacina, setFiltroVacina] = useState('TODOS');
 
     useEffect(() => {
-        axios.get('https://vetleish-api.onrender.com/api/proprietarios/')
+        axios.get('https://lvcvetsusfull.onrender.com/api/proprietarios/')
             .then(response => setProprietarios(response.data))
             .catch(error => console.error("Erro ao carregar mapa:", error));
     }, []);

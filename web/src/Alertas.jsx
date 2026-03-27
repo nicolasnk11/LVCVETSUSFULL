@@ -9,8 +9,8 @@ function Alertas() {
 
     useEffect(() => {
         Promise.all([
-            axios.get('https://vetleish-api.onrender.com/api/pets/'),
-            axios.get('https://vetleish-api.onrender.com/api/proprietarios/')
+            axios.get('https://lvcvetsusfull.onrender.com/api/pets/'),
+            axios.get('https://lvcvetsusfull.onrender.com/api/proprietarios/')
         ]).then(([resPets, resProps]) => {
             
             const tutoresMap = {};

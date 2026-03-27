@@ -107,11 +107,11 @@ const Cadastro = () => {
     try {
       if (isEditing) {
           // SE FOR EDIÇÃO: Usa PATCH e o ID do tutor
-          await axios.patch(`https://vetleish-api.onrender.com/api/proprietarios/${tutorParaEditar.id}/`, dadosParaEnviar);
+          await axios.patch(`https://lvcvetsusfull.onrender.com/api/proprietarios/${tutorParaEditar.id}/`, dadosParaEnviar);
           alert("✅ Dados atualizados com sucesso!");
       } else {
           // SE FOR NOVO: Usa POST
-          await axios.post('https://vetleish-api.onrender.com/api/proprietarios/', dadosParaEnviar);
+          await axios.post('https://lvcvetsusfull.onrender.com/api/proprietarios/', dadosParaEnviar);
           alert("✅ Cadastro realizado com sucesso!");
       }
       navigate('/'); // Volta para o menu

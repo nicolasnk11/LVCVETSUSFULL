@@ -28,8 +28,8 @@ function Dashboard() {
     useEffect(() => {
         // 🔥 TRUQUE: Bater nas duas rotas ao mesmo tempo para cruzar ID com Nome
         Promise.all([
-            axios.get('https://vetleish-api.onrender.com/api/pets/'),
-            axios.get('https://vetleish-api.onrender.com/api/proprietarios/')
+            axios.get('https://lvcvetsusfull.onrender.com/api/pets/'),
+            axios.get('https://lvcvetsusfull.onrender.com/api/proprietarios/')
         ]).then(([resPets, resProps]) => {
             // Cria o dicionário de tutores
             const mapa = {};

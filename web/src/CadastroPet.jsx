@@ -21,7 +21,7 @@ const CadastroPet = () => {
     });
 
     useEffect(() => {
-        axios.get('https://vetleish-api.onrender.com/api/proprietarios/')
+        axios.get('https://lvcvetsusfull.onrender.com/api/proprietarios/')
             .then(res => setProprietarios(res.data))
             .catch(err => console.error(err));
     }, []);
@@ -49,7 +49,7 @@ const CadastroPet = () => {
         if (foto) data.append('foto', foto);
 
         try {
-            await axios.post('https://vetleish-api.onrender.com/api/pets/', data, {
+            await axios.post('https://lvcvetsusfull.onrender.com/api/pets/', data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             alert('Pet cadastrado com sucesso!');

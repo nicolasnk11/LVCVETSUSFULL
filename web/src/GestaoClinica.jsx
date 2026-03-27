@@ -63,7 +63,7 @@ function GestaoClinica() {
   const getFotoUrl = (fotoPath) => {
       if (!fotoPath) return null;
       if (fotoPath.startsWith('http')) return fotoPath;
-      return `https://vetleish-api.onrender.com${fotoPath}`;
+      return `https://lvcvetsusfull.onrender.com${fotoPath}`;
   };
 
   useEffect(() => { carregarPets(); }, []);
@@ -79,7 +79,7 @@ function GestaoClinica() {
   }, [pets, location.state]);
 
   const carregarPets = () => {
-    axios.get('https://vetleish-api.onrender.com/api/pets/')
+    axios.get('https://lvcvetsusfull.onrender.com/api/pets/')
       .then(res => { setPets(res.data); setLoading(false); })
       .catch(err => console.error(err));
   };
@@ -88,7 +88,7 @@ function GestaoClinica() {
       if (!selectedPet) return;
       if (!window.confirm(`Tem certeza que deseja EXCLUIR o prontuário de ${selectedPet.nome}?`)) return;
       try {
-          await axios.delete(`https://vetleish-api.onrender.com/api/pets/${selectedPet.id}/`);
+          await axios.delete(`https://lvcvetsusfull.onrender.com/api/pets/${selectedPet.id}/`);
           alert("Prontuário excluído."); setSelectedPet(null); carregarPets();
       } catch (e) { alert("Erro ao excluir."); }
   };
@@ -128,9 +128,9 @@ function GestaoClinica() {
       });
       if (editFoto) data.append('foto', editFoto);
       try {
-          await axios.patch(`https://vetleish-api.onrender.com/api/pets/${selectedPet.id}/`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+          await axios.patch(`https://lvcvetsusfull.onrender.com/api/pets/${selectedPet.id}/`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
           setShowEditModal(false); 
-          const res = await axios.get('https://vetleish-api.onrender.com/api/pets/');
+          const res = await axios.get('https://lvcvetsusfull.onrender.com/api/pets/');
           setPets(res.data);
           setSelectedPet(res.data.find(p => p.id === selectedPet.id));
       } catch (error) { console.error(error); alert("Erro ao salvar."); }
@@ -148,9 +148,9 @@ function GestaoClinica() {
   
   const handleSubmitVisita = (e) => {
     e.preventDefault();
-    axios.post('https://vetleish-api.onrender.com/api/visitas/', { ...formData, pet: selectedPet.id })
+    axios.post('https://lvcvetsusfull.onrender.com/api/visitas/', { ...formData, pet: selectedPet.id })
       .then(async () => { 
-          const res = await axios.get('https://vetleish-api.onrender.com/api/pets/');
+          const res = await axios.get('https://lvcvetsusfull.onrender.com/api/pets/');
           setPets(res.data);
           setSelectedPet(res.data.find(p => p.id === selectedPet.id));
           setAbaAtiva('historico');
@@ -159,10 +159,10 @@ function GestaoClinica() {
 
   const handleSubmitMedicacao = (e) => {
     e.preventDefault();
-    axios.post('https://vetleish-api.onrender.com/api/medicacoes/', { ...medFormData, pet: selectedPet.id })
+    axios.post('https://lvcvetsusfull.onrender.com/api/medicacoes/', { ...medFormData, pet: selectedPet.id })
       .then(async () => { 
           setMedFormData({nome: '', data_inicio: new Date().toISOString().split('T')[0], dose: '', observacoes: ''});
-          const res = await axios.get('https://vetleish-api.onrender.com/api/pets/');
+          const res = await axios.get('https://lvcvetsusfull.onrender.com/api/pets/');
           setPets(res.data);
           setSelectedPet(res.data.find(p => p.id === selectedPet.id));
       }).catch(() => alert("Erro ao prescrever medicação."));
@@ -180,14 +180,14 @@ function GestaoClinica() {
     if (fotoLegenda) data.append('legenda', fotoLegenda);
 
     try {
-        await axios.post('https://vetleish-api.onrender.com/api/fotos-evolucao/', data, {
+        await axios.post('https://lvcvetsusfull.onrender.com/api/fotos-evolucao/', data, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         setFotoUpload(null);
         setFotoLegenda('');
         if (fotoInputRef.current) fotoInputRef.current.value = '';
         
-        const res = await axios.get('https://vetleish-api.onrender.com/api/pets/');
+        const res = await axios.get('https://lvcvetsusfull.onrender.com/api/pets/');
         setPets(res.data);
         setSelectedPet(res.data.find(p => p.id === selectedPet.id));
     } catch (error) {

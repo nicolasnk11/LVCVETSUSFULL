@@ -12,7 +12,7 @@ function ConsultaPublica() {
     useEffect(() => {
         // Busca os dados do cão no backend
         // Nota para a defesa: Numa aplicação real, esta rota do Django deve ser pública (ReadOnly)
-        axios.get(`https://vetleish-api.onrender.com/api/pets/${id}/`)
+        axios.get(`https://lvcvetsusfull.onrender.com/api/pets/${id}/`)
             .then(res => {
                 setPet(res.data);
                 setLoading(false);
@@ -51,7 +51,7 @@ function ConsultaPublica() {
     if (pet.status === 'POSITIVO') { corStatus = '#ef4444'; IconeStatus = FaTimesCircle; }
     if (pet.status === 'SUSPEITO') { corStatus = '#f59e0b'; IconeStatus = FaExclamationTriangle; }
 
-    const fotoUrl = pet.foto ? (pet.foto.startsWith('http') ? pet.foto : `https://vetleish-api.onrender.com${pet.foto}`) : null;
+    const fotoUrl = pet.foto ? (pet.foto.startsWith('http') ? pet.foto : `https://lvcvetsusfull.onrender.com${pet.foto}`) : null;
     const usaColeira = pet.visitas?.some(v => v.usa_coleira);
 
     return (

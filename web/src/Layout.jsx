@@ -21,7 +21,7 @@ const Layout = ({ children }) => {
 
   // 🔥 NOVA MÁGICA: Buscar a quantidade REAL de alertas sempre que mudar de tela
   useEffect(() => {
-    axios.get('https://vetleish-api.onrender.com/api/pets/')
+    axios.get('https://lvcvetsusfull.onrender.com/api/pets/')
       .then(res => {
         const totalAlertas = calcularAlertasAtivos(res.data);
         setAlertCount(totalAlertas);

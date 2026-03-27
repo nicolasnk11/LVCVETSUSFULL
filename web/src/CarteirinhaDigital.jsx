@@ -23,7 +23,7 @@ function CarteirinhaDigital({ pet, proprietario }) {
     const linkConsultaPublica = `${window.location.origin}/consulta/${pet.id}`;
 
     // Helper para foto
-    const fotoUrl = pet.foto ? (pet.foto.startsWith('http') ? pet.foto : `https://vetleish-api.onrender.com${pet.foto}`) : null;
+    const fotoUrl = pet.foto ? (pet.foto.startsWith('http') ? pet.foto : `https://lvcvetsusfull.onrender.com${pet.foto}`) : null;
 
     return (
         <div>

@@ -22,7 +22,7 @@ function Login({ onLogin }) {
             return;
         }
 
-        axios.post('https://vetleish-api.onrender.com/api/login/', {
+        axios.post('https://lvcvetsusfull.onrender.com/api/login/', {
             username: usuario,
             password: senha
         })

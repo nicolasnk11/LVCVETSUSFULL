@@ -17,7 +17,7 @@ const Menu = () => {
 
   const carregarDados = () => {
       setLoading(true);
-      axios.get('https://vetleish-api.onrender.com/api/proprietarios/')
+      axios.get('https://lvcvetsusfull.onrender.com/api/proprietarios/')
       .then(response => {
         const dados = Array.isArray(response.data) ? response.data.reverse() : []; 
         setProprietarios(dados);
