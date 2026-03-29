@@ -1,34 +1,60 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
 
+/* =========================================
+   1. VARIÁVEIS GLOBAIS (DESIGN SYSTEM)
+   ========================================= */
 :root {
-  /* Cores Premium */
-  --sidebar-bg: #0f172a;     /* Azul Noturno (Quase preto) */
-  --sidebar-text: #94a3b8;   /* Cinza Azulado */
-  --sidebar-active: #38bdf8; /* Azul Neon suave */
+  /* Paleta Noturna (Sidebar) */
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #94a3b8;
+  --sidebar-active: #38bdf8;
   --sidebar-active-bg: rgba(56, 189, 248, 0.1);
   
-  --bg-main: #f8fafc;        /* Branco Gelo (Fundo) */
-  --surface: #ffffff;        /* Branco Puro (Cards) */
-  --text-primary: #1e293b;   /* Texto Escuro */
-  --text-secondary: #64748b; /* Texto Suave */
+  /* Paleta Clara (Fundo e Cards) */
+  --bg-main: #f8fafc;
+  --surface: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
   
-  --brand-primary: #0ea5e9;  /* Azul Sky */
-  --brand-success: #10b981;  /* Verde Esmeralda */
-  --brand-warning: #f59e0b;  /* Laranja */
-  --brand-danger: #ef4444;   /* Vermelho */
+  /* Cores de Alerta e Marca (Brand) */
+  --brand-primary: #0ea5e9;
+  --brand-success: #10b981;
+  --brand-warning: #f59e0b;
+  --brand-danger: #ef4444;
+
+  /* Transições Padrão */
+  --transition-fast: all 0.2s ease-in-out;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =========================================
+   2. RESET E TIPOGRAFIA PREMIUM
+   ========================================= */
+* {
+  box-sizing: border-box;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: var(--bg-main);
   color: var(--text-primary);
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  -webkit-font-smoothing: antialiased; /* Deixa a fonte mais nítida */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
-/* Sidebar de Luxo */
+/* Cor elegante ao selecionar textos */
+::selection {
+  background-color: var(--sidebar-active-bg);
+  color: var(--brand-primary);
+}
+
+/* =========================================
+   3. ESTRUTURA E RESPONSIVIDADE (MOBILE FIRST)
+   ========================================= */
 .sidebar {
   width: 280px;
   background-color: var(--sidebar-bg);
@@ -37,23 +63,45 @@ body {
   padding: 32px 24px;
   display: flex;
   flex-direction: column;
-  z-index: 100;
-  box-shadow: 4px 0 24px rgba(0,0,0,0.05);
+  z-index: 1000;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+  transition: var(--transition-smooth);
 }
 
 .main-content {
   margin-left: 280px;
   padding: 40px;
   min-height: 100vh;
+  transition: var(--transition-smooth);
 }
 
-/* Nav Items */
+/* Adaptação para Tablets */
+@media (max-width: 992px) {
+  .sidebar { width: 240px; padding: 24px 16px; }
+  .main-content { margin-left: 240px; padding: 24px; }
+}
+
+/* Adaptação para Celulares (Impede a quebra da tela) */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .main-content { margin-left: 0; padding: 16px; }
+}
+
+/* =========================================
+   4. COMPONENTES DE NAVEGAÇÃO
+   ========================================= */
 .nav-category {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: #475569;
-  font-weight: 700;
+  font-weight: 800;
   margin-top: 24px;
   margin-bottom: 12px;
 }
@@ -66,74 +114,110 @@ body {
   text-decoration: none;
   border-radius: 12px;
   margin-bottom: 8px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  transition: var(--transition-fast);
 }
 
 .nav-item svg { margin-right: 14px; font-size: 1.2rem; }
 
 .nav-item:hover {
-  background-color: rgba(255,255,255,0.05);
-  color: white;
-  transform: translateX(5px);
+  background-color: rgba(255,255,255,0.08);
+  color: var(--surface);
+  transform: translateX(4px);
 }
 
 .nav-item.active {
   background-color: var(--brand-primary);
-  color: white;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4); /* Brilho no botão ativo */
+  color: var(--surface);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
 }
 
-/* Cards Flutuantes */
+/* =========================================
+   5. UI PREMIUM (CARDS, BOTÕES E TABELAS)
+   ========================================= */
 .card-premium {
   background: var(--surface);
-  border-radius: 20px; /* Cantos bem arredondados */
+  border-radius: 20px;
   padding: 28px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
   border: 1px solid #f1f5f9;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: var(--transition-smooth);
   position: relative;
   overflow: hidden;
 }
 
 .card-premium:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
 }
 
-/* Botão Moderno */
 .btn-modern {
   background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-  color: white;
+  color: var(--surface);
   border: none;
   padding: 12px 24px;
   border-radius: 12px;
-  font-weight: 600;
+  font-weight: 700;
   box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
-  transition: all 0.2s;
+  transition: var(--transition-fast);
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
 }
-.btn-modern:hover {
+
+.btn-modern:hover:not(:disabled) {
   box-shadow: 0 6px 15px rgba(14, 165, 233, 0.5);
   transform: translateY(-2px);
 }
 
-/* Tabela Estilo SaaS */
+.btn-modern:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .table-modern th {
   font-size: 0.75rem;
   text-transform: uppercase;
   color: var(--text-secondary);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.5px;
   border-bottom: 2px solid #f1f5f9;
   padding-bottom: 12px;
 }
+
 .table-modern td {
   padding: 16px 0;
   border-bottom: 1px solid #f8fafc;
   color: var(--text-primary);
+  font-weight: 500;
 }
+
 .table-modern tr:last-child td { border-bottom: none; }
+
+/* =========================================
+   6. ANIMAÇÕES GLOBAIS (UX DE OURO)
+   ========================================= */
+/* Substitui todas as tags <style> perdidas pelo código */
+.fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Utilitários Extras */
+.transition-hover { transition: var(--transition-fast); }
+.cursor-pointer { cursor: pointer; }
