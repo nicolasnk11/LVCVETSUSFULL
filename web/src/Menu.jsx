@@ -69,7 +69,11 @@ const Menu = () => {
     };
 
     const irParaProntuario = (petId) => {
-        if (petId) navigate('/clinica', { state: { selectedPetId: petId } });
+        if (petId) {
+            navigate('/clinica', { state: { selectedPetId: petId } });
+        } else {
+            navigate('/clinica'); // Redirecionamento seguro para a página vazia
+        }
     };
 
     const editarTutor = (tutor) => {
@@ -88,15 +92,16 @@ const Menu = () => {
         <Layout>
             <div className="container-fluid p-0 mx-auto fade-in" style={{ maxWidth: '1300px', padding: '20px' }}>
                 
-                {/* HEADER OPERACIONAL */}
+                {/* HEADER OPERACIONAL COM BOTÕES ATUALIZADOS */}
                 <div className="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center mb-5 gap-4">
                     <div>
                         <h2 className="fw-black m-0 text-dark" style={{ letterSpacing: '-1.5px' }}>Fila de Triagem</h2>
                         <p className="text-muted mt-1 fw-bold small text-uppercase" style={{ letterSpacing: '1px' }}>Vigilância Epidemiológica</p>
                     </div>
                     
-                    <div className="d-flex flex-column flex-md-row gap-3">
-                        <div className="bg-white rounded-pill px-4 py-2 d-flex align-items-center shadow-sm border" style={{ minWidth: '300px' }}>
+                    <div className="d-flex flex-column flex-md-row gap-3 flex-wrap">
+                        {/* Barra de Pesquisa */}
+                        <div className="bg-white rounded-pill px-4 py-2 d-flex align-items-center shadow-sm border" style={{ minWidth: '300px', flexGrow: 1 }}>
                             <Search size={18} className="text-muted me-2" />
                             <input 
                                 type="text" 
@@ -107,8 +112,25 @@ const Menu = () => {
                                 style={{ outline: 'none' }}
                             />
                         </div>
-                        <div className="d-flex gap-2">
-                            <button className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2" onClick={() => navigate('/cadastro')}>
+                        
+                        {/* 🚀 BOTÕES DE AÇÃO RÁPIDA (O que estava faltando) */}
+                        <div className="d-flex gap-2 flex-wrap">
+                            <button 
+                                className="btn btn-success rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2 flex-grow-1 flex-md-grow-0" 
+                                onClick={() => irParaProntuario(null)}
+                            >
+                                <Stethoscope size={18} /> <span className="d-none d-sm-inline">Prontuários</span>
+                            </button>
+                            <button 
+                                className="btn btn-outline-primary bg-white rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2 flex-grow-1 flex-md-grow-0" 
+                                onClick={() => navigate('/cadastro-pet')}
+                            >
+                                <Dog size={18} /> <span className="d-none d-sm-inline">Novo Pet</span>
+                            </button>
+                            <button 
+                                className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2 flex-grow-1 flex-md-grow-0" 
+                                onClick={() => navigate('/cadastro')}
+                            >
                                 <UserPlus size={18} /> <span className="d-none d-sm-inline">Novo Tutor</span>
                             </button>
                         </div>

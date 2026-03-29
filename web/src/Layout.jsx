@@ -4,7 +4,7 @@ import axios from 'axios';
 // Ícones Premium
 import { PieChart, ClipboardList, Bell, Map, PawPrint, User, LogOut, Menu, X, ShieldCheck } from 'lucide-react';
 
-// 🧩 COMPONENTE INTELIGENTE: Item de Navegação (Elimina repetição de código)
+// 🧩 COMPONENTE INTELIGENTE: Item de Navegação
 const NavLinkItem = ({ to, icon: Icon, label, badge, currentPath, onClick }) => {
     const isActive = currentPath === to;
     return (
@@ -32,35 +32,53 @@ const Layout = ({ children }) => {
     const navigate = useNavigate();
     const [nomeUsuario, setNomeUsuario] = useState('Carregando...');
     const [alertCount, setAlertCount] = useState(0);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado do Menu Mobile
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         const usuarioSalvo = localStorage.getItem('lvcvetsus_usuario');
         setNomeUsuario(usuarioSalvo || 'Profissional de Saúde');
     }, []);
 
-    // Busca alertas proativamente
+    // 🛠️ CORREÇÃO 1: Busca alertas em background (Sem depender de location.pathname)
     useEffect(() => {
-        let isMounted = true; // Previne vazamento de memória
+        let isMounted = true; 
+        let interval;
 
-        axios.get('https://lvcvetsusfull.onrender.com/api/pets/')
-            .then(res => {
+        const sincronizarAlertas = async () => {
+            try {
+                const res = await axios.get('https://lvcvetsusfull.onrender.com/api/pets/', { 
+                    timeout: 8000 
+                });
                 if (isMounted) {
-                    const petsData = res.data.results || res.data;
+                    const petsData = res.data.results || res.data || [];
                     setAlertCount(calcularAlertasAtivos(petsData));
                 }
-            })
-            .catch(err => console.error("Erro ao sincronizar alertas na Sidebar:", err));
+            } catch (err) {
+                console.error("Erro ao sincronizar alertas na Sidebar:", err);
+                if (isMounted) setAlertCount(0);
+            }
+        };
 
-        return () => { isMounted = false; };
-    }, [location.pathname]);
+        sincronizarAlertas(); // Roda uma vez ao entrar no sistema
+        interval = setInterval(sincronizarAlertas, 30000); // Atualiza a cada 30 segundos sozinho
 
+        return () => { 
+            isMounted = false; 
+            clearInterval(interval); 
+        };
+    }, []); // ⬅️ ARRAY VAZIO AQUI SALVA O SERVIDOR!
+
+    // 🛠️ CORREÇÃO 2: Trava de segurança contra tela branca
     const calcularAlertasAtivos = (petsData) => {
+        if (!Array.isArray(petsData)) return 0; // Proteção absoluta
+
         const alertasAdiados = JSON.parse(localStorage.getItem('alertasAdiados_LVC')) || {};
         const agora = new Date().getTime();
         let count = 0;
 
         petsData.forEach(pet => {
+            if (!pet) return;
+            
             const ultimaVisita = pet.visitas && pet.visitas.length > 0 ? pet.visitas[pet.visitas.length - 1] : null;
 
             if (pet.status === 'SUSPEITO') {
@@ -71,7 +89,7 @@ const Layout = ({ children }) => {
                 const idUnico = `coleira-pet-${pet.id}`;
                 if (!alertasAdiados[idUnico] || agora > alertasAdiados[idUnico]) count++;
             }
-            if (pet.medicacoes && pet.medicacoes.length > 0) {
+            if (pet.medicacoes && Array.isArray(pet.medicacoes) && pet.medicacoes.length > 0) {
                 pet.medicacoes.forEach(med => {
                     const idUnico = `med-${med.id}-pet-${pet.id}`;
                     if (!alertasAdiados[idUnico] || agora > alertasAdiados[idUnico]) count++;
@@ -92,7 +110,7 @@ const Layout = ({ children }) => {
     return (
         <div className="d-flex flex-column flex-md-row min-vh-100 bg-light">
             
-            {/* 📱 HEADER MOBILE (Só aparece em telas pequenas) */}
+            {/* 📱 HEADER MOBILE */}
             <div className="d-md-none bg-white p-3 d-flex justify-content-between align-items-center shadow-sm sticky-top z-3">
                 <div className="d-flex align-items-center gap-2">
                     <ShieldCheck className="text-primary" size={24} />
@@ -104,7 +122,7 @@ const Layout = ({ children }) => {
                 </button>
             </div>
 
-            {/* 🌑 OVERLAY MOBILE (Fundo escuro quando o menu abre) */}
+            {/* 🌑 OVERLAY MOBILE */}
             {isMobileMenuOpen && (
                 <div className="d-md-none position-fixed top-0 start-0 w-100 h-100 bg-dark opacity-50 z-index-overlay fade-in" onClick={fecharMenuMobile}></div>
             )}
@@ -164,7 +182,7 @@ const Layout = ({ children }) => {
                 </div>
             </aside>
 
-            {/* 📄 CONTEÚDO PRINCIPAL (As telas do sistema são injetadas aqui) */}
+            {/* 📄 CONTEÚDO PRINCIPAL */}
             <main className="main-content flex-grow-1 position-relative">
                 {children}
             </main>

@@ -24,6 +24,8 @@ function GestaoClinica() {
     const [editPreview, setEditPreview] = useState(null);
 
     const componentRef = useRef();
+    const navTabsRef = useRef(null); // 🔥 NOVO: Referência para as abas rolarem com o mouse no PC
+
     const handlePrint = useReactToPrint({
         contentRef: componentRef,
         documentTitle: selectedPet ? `Prontuario_LVC_${selectedPet.nome}` : 'Prontuario_LVC',
@@ -49,6 +51,14 @@ function GestaoClinica() {
     const mostrarFeedback = (msg, type = 'success') => {
         setFeedback({ show: true, msg, type });
         setTimeout(() => setFeedback({ show: false, msg: '', type: '' }), 4000);
+    };
+
+    // 🔥 NOVO: Função para rolar as abas com a roda do mouse no PC
+    const handleTabsScroll = (e) => {
+        if (navTabsRef.current) {
+            e.preventDefault(); // Impede a página de rolar para baixo
+            navTabsRef.current.scrollLeft += e.deltaY; // Move a barra de rolagem horizontal
+        }
     };
 
     const handleCalcularEstadio = () => {
@@ -81,10 +91,15 @@ function GestaoClinica() {
         }
     }, [pets, location.state]);
 
+    // 🛡️ Segurança adicionada no `.results`
     const carregarPets = () => {
         axios.get('https://lvcvetsusfull.onrender.com/api/pets/')
-            .then(res => { setPets(res.data.results || res.data); setLoading(false); })
-            .catch(err => console.error(err));
+            .then(res => { 
+                const rawData = res?.data?.results || res?.data || [];
+                setPets(Array.isArray(rawData) ? rawData : []); 
+                setLoading(false); 
+            })
+            .catch(err => { console.error(err); setLoading(false); });
     };
 
     const handleDeletePet = async () => {
@@ -202,7 +217,7 @@ function GestaoClinica() {
 
     const formatTexto = (t) => t ? t.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, l => l.toUpperCase()) : "-";
     const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('pt-BR') : "Pendente";
-    const petsFiltrados = pets.filter(p => p.nome.toLowerCase().includes(searchTerm.toLowerCase()));
+    const petsFiltrados = pets.filter(p => (p?.nome?.toLowerCase() || "").includes(searchTerm.toLowerCase()));
 
     const chartDataMock = [
         { data: 'Jan', peso: 15.2, creatinina: 1.1 }, { data: 'Fev', peso: 14.8, creatinina: 1.4 },
@@ -259,8 +274,8 @@ function GestaoClinica() {
                 
                 {/* Botão Voltar Mobile */}
                 <div className="d-md-none bg-white p-3 border-bottom shadow-sm sticky-top z-3 d-flex align-items-center gap-3">
-                    <button className="btn btn-light rounded-circle p-2 shadow-sm border" onClick={() => setSelectedPet(null)}><ChevronLeft size={20}/></button>
-                    <h6 className="m-0 fw-bold text-dark">Voltar à Lista</h6>
+                    <button className="btn btn-light rounded-circle p-2 shadow-sm border d-flex align-items-center justify-content-center" onClick={() => setSelectedPet(null)}><ChevronLeft size={20}/></button>
+                    <h6 className="m-0 fw-bold text-dark">Voltar aos Pacientes</h6>
                 </div>
 
                 {/* Feedback Toast */}
@@ -277,7 +292,7 @@ function GestaoClinica() {
                     {!selectedPet ? (
                         <div className="h-100 d-flex flex-column justify-content-center align-items-center text-muted opacity-50" style={{minHeight: '70vh'}}>
                             <FileText size={80} className="mb-3"/>
-                            <h4 className="fw-bold">Selecione um paciente ao lado</h4>
+                            <h4 className="fw-bold text-center">Selecione um paciente ao lado</h4>
                         </div>
                     ) : (
                         <div ref={componentRef} className="container bg-white rounded-4 shadow-sm p-4 p-md-5 border-0 fade-in" style={{maxWidth: '1000px', margin: '0 auto'}}>
@@ -290,7 +305,7 @@ function GestaoClinica() {
 
                             {/* Header do Prontuário */}
                             <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-4">
-                                <div className="d-flex align-items-center gap-4">
+                                <div className="d-flex flex-column flex-sm-row align-items-center align-items-sm-start gap-4 text-center text-sm-start">
                                     <div className="position-relative flex-shrink-0">
                                         {selectedPet.foto ? 
                                             <img src={getFotoUrl(selectedPet.foto)} className="rounded-circle shadow border border-3 border-white" style={{width:110, height:110, objectFit:'cover'}} alt={selectedPet.nome} /> 
@@ -299,7 +314,7 @@ function GestaoClinica() {
                                     </div>
                                     <div>
                                         <h2 className="fw-black mb-2 text-dark text-uppercase" style={{letterSpacing: '-1px'}}>{selectedPet.nome}</h2>
-                                        <div className="d-flex flex-wrap gap-2 mt-1">
+                                        <div className="d-flex flex-wrap justify-content-center justify-content-sm-start gap-2 mt-1">
                                             <span className={`badge rounded-pill px-3 py-2 fw-bold border ${selectedPet.status === 'POSITIVO' ? 'bg-danger text-white border-danger' : selectedPet.status === 'NEGATIVO' ? 'bg-success text-white border-success' : 'bg-warning text-dark border-warning'}`}>
                                                 {formatTexto(selectedPet.status)}
                                             </span>
@@ -308,8 +323,8 @@ function GestaoClinica() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="d-print-none d-flex gap-2"> 
-                                    <button className="btn btn-outline-dark shadow-sm fw-bold rounded-pill px-4 d-flex align-items-center gap-2" onClick={handlePrint}><Printer size={16}/> Imprimir</button>
+                                <div className="d-print-none d-flex flex-wrap justify-content-center gap-2 w-100 w-md-auto mt-3 mt-md-0"> 
+                                    <button className="btn btn-outline-dark shadow-sm fw-bold rounded-pill px-4 d-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-md-grow-0" onClick={handlePrint}><Printer size={16}/> Imprimir</button>
                                     <button className="btn btn-light border shadow-sm rounded-circle p-3 text-secondary transition-hover" onClick={abrirModalEdicao} title="Editar Perfil"><Edit3 size={18} /></button>
                                     <button className="btn btn-light border shadow-sm rounded-circle p-3 text-danger transition-hover ms-1" onClick={handleDeletePet} title="Excluir Prontuário"><Trash2 size={18} /></button>
                                 </div>
@@ -335,7 +350,7 @@ function GestaoClinica() {
                                         <div className="bg-white p-4 rounded-4 shadow-sm mb-3 border">
                                             <p className={`small fw-black mb-3 text-${risco.cor === 'warning' ? 'dark' : risco.cor} opacity-75 text-uppercase`} style={{ letterSpacing: '0.5px' }}>Fatores Detetados pela IA:</p>
                                             <ul className="mb-0 small text-dark fw-bold" style={{ listStyleType: 'none', paddingLeft: '0' }}>
-                                                {risco.motivos.map((motivo, idx) => <li key={idx} className="mb-2 d-flex align-items-center gap-2"><Check size={14} className="text-muted"/> {motivo}</li>)}
+                                                {risco.motivos.map((motivo, idx) => <li key={idx} className="mb-2 d-flex align-items-center gap-2"><Check size={14} className="text-muted flex-shrink-0"/> {motivo}</li>)}
                                             </ul>
                                         </div>
 
@@ -364,26 +379,33 @@ function GestaoClinica() {
                                 </div>
                             </div>
 
-                            {/* NAVEGAÇÃO INTERNA (TABS) */}
-                            <ul className="nav nav-pills gap-2 mb-4 d-print-none pb-3 border-bottom flex-nowrap" style={{ overflowX: 'auto', whiteSpace: 'nowrap', paddingBottom: '5px' }}>
-                                {[
-                                    { id: 'historico', label: 'Histórico', icon: FileText },
-                                    { id: 'medicacoes', label: 'Medicações', icon: Pill },
-                                    { id: 'galeria', label: 'Galeria', icon: ImageIcon },
-                                    { id: 'nova_visita', label: 'Nova Visita', icon: Syringe },
-                                    { id: 'carteirinha', label: 'Carteirinha', icon: IdCard, style: 'bg-dark text-white' },
-                                    { id: 'estadiamento', label: 'Monitorização', icon: Stethoscope, style: 'bg-primary text-white' }
-                                ].map(tab => (
-                                    <li className="nav-item" key={tab.id}>
-                                        <button 
-                                            className={`nav-link rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2 transition-hover ${abaAtiva === tab.id ? (tab.style ? `${tab.style} shadow` : 'active shadow') : 'text-muted bg-light border'}`} 
-                                            onClick={() => setAbaAtiva(tab.id)}
-                                        >
-                                            <tab.icon size={16} /> {tab.label}
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
+                            {/* 🔥 NAVEGAÇÃO INTERNA (TABS COM SCROLL DO MOUSE NO PC) */}
+                            <div className="nav-tabs-wrapper position-relative d-print-none mb-4 pb-2 border-bottom">
+                                <ul 
+                                    className="nav nav-pills gap-2 flex-nowrap overflow-auto custom-scrollbar-tabs" 
+                                    ref={navTabsRef}
+                                    onWheel={handleTabsScroll} // A mágica do mouse acontece aqui!
+                                    style={{ whiteSpace: 'nowrap', paddingBottom: '10px' }}
+                                >
+                                    {[
+                                        { id: 'historico', label: 'Histórico', icon: FileText },
+                                        { id: 'medicacoes', label: 'Medicações', icon: Pill },
+                                        { id: 'galeria', label: 'Galeria', icon: ImageIcon },
+                                        { id: 'nova_visita', label: 'Nova Visita', icon: Syringe },
+                                        { id: 'carteirinha', label: 'Carteirinha', icon: IdCard, style: 'bg-dark text-white' },
+                                        { id: 'estadiamento', label: 'Monitorização', icon: Stethoscope, style: 'bg-primary text-white' }
+                                    ].map(tab => (
+                                        <li className="nav-item" key={tab.id}>
+                                            <button 
+                                                className={`nav-link rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2 transition-hover border ${abaAtiva === tab.id ? (tab.style ? `${tab.style} border-dark shadow` : 'active border-primary shadow') : 'text-muted bg-light border-light'}`} 
+                                                onClick={() => setAbaAtiva(tab.id)}
+                                            >
+                                                <tab.icon size={16} /> {tab.label}
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
 
                             {/* --- CONTEÚDO DAS ABAS --- */}
 
@@ -398,13 +420,13 @@ function GestaoClinica() {
                                         <tbody>
                                             {selectedPet.visitas?.length > 0 ? selectedPet.visitas.map(v => (
                                                 <tr key={v.id}>
-                                                    <td className="fw-bold px-4 py-3 text-dark">{formatDate(v.data_visita)}</td>
+                                                    <td className="fw-bold px-4 py-3 text-dark text-nowrap">{formatDate(v.data_visita)}</td>
                                                     <td className="px-4 py-3"><span className="badge bg-light text-dark rounded-pill border fw-medium">{formatTexto(v.tipo_inquerito)}</span></td>
-                                                    <td className="px-4 py-3 text-muted small fw-medium">
+                                                    <td className="px-4 py-3 text-muted small fw-medium" style={{ minWidth: '150px' }}>
                                                         {[v.tem_emagrecimento && "Emagrecimento", v.tem_alopecia && "Alopecia", v.tem_onicogrifose && "Onicogrifose", v.tem_feridas && "Feridas"].filter(Boolean).join(" • ") || "Assintomático"}
                                                     </td>
                                                     <td className="px-4 py-3">
-                                                        <span className={`badge rounded-pill fw-bold border ${v.resultado_dpp === 'REAGENTE' ? 'bg-danger-subtle text-danger border-danger' : 'bg-success-subtle text-success border-success'}`}>
+                                                        <span className={`badge rounded-pill fw-bold border text-nowrap ${v.resultado_dpp === 'REAGENTE' ? 'bg-danger-subtle text-danger border-danger' : 'bg-success-subtle text-success border-success'}`}>
                                                             {v.resultado_dpp === 'REAGENTE' ? 'Positivo' : 'Negativo'}
                                                         </span>
                                                     </td>
@@ -438,10 +460,10 @@ function GestaoClinica() {
                                         <tbody>
                                             {selectedPet.medicacoes?.length > 0 ? selectedPet.medicacoes.map(m => (
                                                 <tr key={m.id}>
-                                                    <td className="px-4 py-3 fw-bold">{formatDate(m.data_inicio)}</td>
+                                                    <td className="px-4 py-3 fw-bold text-nowrap">{formatDate(m.data_inicio)}</td>
                                                     <td className="fw-black text-primary px-4 py-3">{m.nome.toUpperCase()}</td>
-                                                    <td className="px-4 py-3 fw-medium text-muted">{m.dose || '-'}</td>
-                                                    <td className="px-4 py-3 small text-muted fw-medium">{m.observacoes || '-'}</td>
+                                                    <td className="px-4 py-3 fw-medium text-muted text-nowrap">{m.dose || '-'}</td>
+                                                    <td className="px-4 py-3 small text-muted fw-medium" style={{ minWidth: '150px' }}>{m.observacoes || '-'}</td>
                                                 </tr>
                                             )) : <tr><td colSpan="4" className="text-center py-5 text-muted fw-bold">Nenhum tratamento registrado.</td></tr>}
                                         </tbody>
@@ -471,7 +493,7 @@ function GestaoClinica() {
 
                                 <div className="row g-4">
                                     {selectedPet.galeria?.length > 0 ? selectedPet.galeria.map(img => (
-                                        <div key={img.id} className="col-12 col-sm-6 col-md-4" style={{ pageBreakInside: 'avoid' }}>
+                                        <div key={img.id} className="col-12 col-sm-6 col-lg-4" style={{ pageBreakInside: 'avoid' }}>
                                             <div className="card shadow-sm border rounded-4 overflow-hidden h-100 bg-white">
                                                 <div style={{ height: '220px', backgroundColor: '#f1f5f9' }}>
                                                     <img src={getFotoUrl(img.foto)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Evolução" onError={(e) => e.target.style.display='none'} />
@@ -492,17 +514,17 @@ function GestaoClinica() {
 
                                 {/* Comparativo Visual */}
                                 {selectedPet.galeria?.length >= 2 && (
-                                    <div className="mt-5 p-4 p-md-5 border-0 rounded-4 shadow-sm" style={{ backgroundColor: '#f8fafc', pageBreakInside: 'avoid' }}>
+                                    <div className="mt-5 p-3 p-md-5 border-0 rounded-4 shadow-sm" style={{ backgroundColor: '#f8fafc', pageBreakInside: 'avoid' }}>
                                         <h6 className="fw-black text-dark text-center mb-4 d-flex align-items-center justify-content-center gap-2 text-uppercase"><AlertTriangle className="text-warning"/> Comparativo de Evolução</h6>
                                         <div className="row g-4">
-                                            <div className="col-6 text-center">
+                                            <div className="col-12 col-md-6 text-center">
                                                 <span className="badge bg-secondary mb-3 rounded-pill px-3 py-2 shadow-sm">Primeiro Registro</span>
                                                 <div className="shadow border border-4 border-white rounded-4 overflow-hidden" style={{ height: '200px' }}>
                                                     <img src={getFotoUrl(selectedPet.galeria[0].foto)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Primeiro" />
                                                 </div>
                                                 <small className="d-block mt-3 text-muted fw-bold">{formatDate(selectedPet.galeria[0].data_registro)}</small>
                                             </div>
-                                            <div className="col-6 text-center">
+                                            <div className="col-12 col-md-6 text-center">
                                                 <span className="badge bg-success mb-3 rounded-pill px-3 py-2 shadow-sm">Mais Recente</span>
                                                 <div className="shadow border border-4 border-white rounded-4 overflow-hidden" style={{ height: '200px' }}>
                                                     <img src={getFotoUrl(selectedPet.galeria[selectedPet.galeria.length - 1].foto)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Recente" />
@@ -519,11 +541,11 @@ function GestaoClinica() {
                                 <h5 className="fw-black text-primary mb-4 d-flex align-items-center gap-2"><Syringe /> Registrar Monitoramento</h5>
                                 <form onSubmit={handleSubmitVisita}>
                                     <div className="row g-4 mb-4">
-                                         <div className="col-md-6">
+                                         <div className="col-12 col-md-6">
                                              <label className="fw-bold small text-muted mb-1 text-uppercase">Data da Avaliação</label>
                                              <input type="date" className="form-control border-0 shadow-sm py-2 bg-light" name="data_visita" value={formData.data_visita} onChange={handleInputChange}/>
                                          </div>
-                                         <div className="col-md-6">
+                                         <div className="col-12 col-md-6">
                                              <label className="fw-bold small text-muted mb-1 text-uppercase">Tipo de Inquérito</label>
                                              <select className="form-select border-0 shadow-sm py-2 bg-light fw-medium" name="tipo_inquerito" value={formData.tipo_inquerito} onChange={handleInputChange}>
                                                  <option value="CENSITARIO">Censitário (Busca Ativa)</option>
@@ -547,7 +569,7 @@ function GestaoClinica() {
                                     </div>
 
                                     <div className="row g-4 mb-4">
-                                        <div className="col-md-6">
+                                        <div className="col-12 col-md-6">
                                             <label className="fw-bold small text-muted mb-1 text-uppercase">Resultado ELISA</label>
                                             <select className="form-select border-0 shadow-sm py-3 bg-light fw-bold" name="resultado_elisa" onChange={handleInputChange}>
                                                 <option value="NAO_REALIZADO">Não Realizado</option>
@@ -555,7 +577,7 @@ function GestaoClinica() {
                                                 <option value="NAO_REAGENTE">🟢 Não Reagente (Negativo)</option>
                                             </select>
                                         </div>
-                                        <div className="col-md-6">
+                                        <div className="col-12 col-md-6">
                                             <label className="fw-bold small text-muted mb-1 text-uppercase">Resultado DPP (Teste Rápido)</label>
                                             <select className="form-select border-0 shadow-sm py-3 bg-light fw-bold" name="resultado_dpp" onChange={handleInputChange}>
                                                 <option value="NAO_REALIZADO">Não Realizado</option>
@@ -612,7 +634,7 @@ function GestaoClinica() {
                                 </div>
 
                                 <h6 className="fw-black text-secondary mb-4 mt-5 text-uppercase d-flex align-items-center gap-2" style={{letterSpacing:'1px'}}><ChartIcon className="text-primary"/> Curva Laboratorial</h6>
-                                <div className="bg-white p-4 rounded-4 shadow-sm border" style={{ height: '350px' }}>
+                                <div className="bg-white p-3 p-md-4 rounded-4 shadow-sm border" style={{ height: '350px' }}>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={chartDataMock} margin={{ top: 5, right: 10, left: -25, bottom: 5 }}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
@@ -707,9 +729,17 @@ function GestaoClinica() {
                 .fade-in { animation: fadeIn 0.3s ease-out forwards; }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 
-                /* Esconde a barra de rolagem no nav-pills mas permite rolar no dedo (Mobile) */
-                .nav-pills::-webkit-scrollbar { display: none; }
-                .nav-pills { -ms-overflow-style: none; scrollbar-width: none; }
+                /* Barra de rolagem premium visível no PC (para o mouse) e escondida no celular (onde tem touch) */
+                @media (min-width: 768px) {
+                    .custom-scrollbar-tabs::-webkit-scrollbar { height: 6px; }
+                    .custom-scrollbar-tabs::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+                    .custom-scrollbar-tabs::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+                    .custom-scrollbar-tabs::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+                }
+                @media (max-width: 767px) {
+                    .custom-scrollbar-tabs::-webkit-scrollbar { display: none; }
+                    .custom-scrollbar-tabs { -ms-overflow-style: none; scrollbar-width: none; }
+                }
                 `}
             </style>
         </div>
